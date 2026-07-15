@@ -5,294 +5,285 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
 <title>Administración · Rifa</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"></noscript>
 <style>
   :root {
-    --verde: #1b7a43;
-    --verde-oscuro: #145c33;
-    --crema: #faf6ef;
-    --rojo: #c0392b;
+    --verde: #0f9d63;
+    --verde-oscuro: #0a6b45;
+    --verde-tint: #e7f6ef;
+    --oro: #f2a71b;
     --azul: #2471a3;
-    --texto: #2c3e50;
+    --azul-tint: #e8f1f8;
+    --rosa: #e11d48;
+    --tinta: #14231d;
+    --gris: #5f7169;
+    --crema: #fbf7f0;
+    --superficie: #ffffff;
+    --borde: #e7e0d4;
+    --radio: 18px;
+    --sombra-sm: 0 2px 8px rgba(20,35,29,.06), 0 1px 2px rgba(20,35,29,.04);
+    --sombra-md: 0 10px 30px rgba(20,35,29,.10), 0 2px 8px rgba(20,35,29,.05);
+    --sombra-lg: 0 24px 60px rgba(10,107,69,.18), 0 6px 16px rgba(20,35,29,.08);
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
   body {
-    font-family: 'Segoe UI', Arial, sans-serif;
-    background: var(--crema);
-    color: var(--texto);
-    min-height: 100vh;
-    padding-bottom: 120px;
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    color: var(--tinta);
+    background:
+      radial-gradient(900px 400px at 100% -10%, rgba(36,113,163,.12), transparent 60%),
+      radial-gradient(900px 500px at -10% 10%, rgba(15,157,99,.10), transparent 55%),
+      var(--crema);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
   }
-  header {
-    background: linear-gradient(135deg, var(--azul), #1a5276);
-    color: white;
-    text-align: center;
-    padding: 20px 16px;
-  }
-  header h1 { font-size: 1.5rem; }
-  header p { opacity: .85; font-size: .9rem; margin-top: 4px; }
+  .contenedor { width: 100%; max-width: 680px; margin: 0 auto; padding: 0 16px; }
 
+  /* HERO */
+  .hero {
+    text-align: center;
+    padding: 34px 20px 28px;
+    background: linear-gradient(160deg, #1f7fb0 0%, #16597f 100%);
+    color: #fff;
+    border-radius: 0 0 28px 28px;
+  }
+  .hero .cinta {
+    display: inline-flex; align-items: center; gap: 7px;
+    background: rgba(255,255,255,.16); border: 1px solid rgba(255,255,255,.28);
+    padding: 5px 13px; border-radius: 999px;
+    font-size: .72rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+  }
+  .hero .cinta svg { width: 14px; height: 14px; }
+  .hero h1 { font-family: 'Fraunces', Georgia, serif; font-weight: 700; font-size: clamp(1.7rem, 6vw, 2.3rem); margin: 12px 0 4px; }
+  .hero p { opacity: .9; font-size: .95rem; }
+
+  /* Instrucciones */
   .instrucciones {
-    max-width: 640px;
-    margin: 16px auto;
-    padding: 12px 16px;
-    background: #fff8e1;
-    border: 1px solid #f0d98c;
-    border-radius: 10px;
-    font-size: .9rem;
-    color: #7a6420;
-  }
-
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(10, 1fr);
-    gap: 6px;
-    max-width: 640px;
-    margin: 16px auto;
-    padding: 0 12px;
-  }
-  .numero-celda {
-    position: relative;
-    aspect-ratio: 1;
-    background: white;
-    border: 2px solid var(--verde);
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: clamp(.9rem, 3.5vw, 1.2rem);
-    font-weight: 700;
-    color: var(--verde-oscuro);
-    cursor: pointer;
-    user-select: none;
-    transition: transform .1s;
-  }
-  .numero-celda:hover { transform: scale(1.08); }
-  .numero-celda.vendido {
-    background: var(--rojo);
-    border-color: var(--rojo);
-    color: white;
-  }
-  .numero-celda .nombre-tag {
-    position: absolute;
-    bottom: 2px;
-    font-size: .45rem;
-    font-weight: 400;
-    max-width: 95%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  .numero-celda.seleccionada {
-    outline: 4px solid var(--azul);
-    outline-offset: -2px;
-    box-shadow: 0 0 0 3px rgba(36,113,163,.25);
-  }
-
-  /* Buscador */
-  .buscador {
-    max-width: 640px;
-    margin: 16px auto 0;
-    padding: 0 16px;
-    text-align: center;
-  }
-  .buscador .caja {
-    background: white;
-    border-radius: 12px;
+    margin-top: 20px;
     padding: 14px 16px;
-    box-shadow: 0 2px 6px rgba(0,0,0,.08);
-    border-top: 4px solid var(--azul);
+    background: #fff8e6; border: 1px solid #f2e2b0; border-radius: var(--radio);
+    font-size: .92rem; color: #6b5618;
   }
-  .buscador input {
-    width: 90px;
-    text-align: center;
-    font-size: 1.4rem;
-    font-weight: 700;
-    letter-spacing: 3px;
-    padding: 6px;
-    border: 2px solid #ddd;
-    border-radius: 8px;
-  }
-  .buscador .resultado { margin-top: 10px; font-size: 1.05rem; min-height: 1.3em; }
-  .buscador .resultado b { color: var(--azul); }
+  .instrucciones b { color: #52430f; }
 
-  /* Modo selección múltiple */
-  .modo-barra {
-    max-width: 640px;
-    margin: 16px auto 0;
-    padding: 0 16px;
-    text-align: center;
+  /* Resumen (stats) */
+  .resumen {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+    margin-top: 16px;
   }
-  .btn-modo {
-    background: #eaf2f8;
-    color: var(--azul);
-    border: 2px solid var(--azul);
+  .stat {
+    background: var(--superficie); border: 1px solid var(--borde); border-radius: 14px;
+    padding: 14px 8px; text-align: center; box-shadow: var(--sombra-sm);
   }
-  .btn-modo.activo { background: var(--azul); color: white; }
+  .stat .n { font-size: 1.4rem; font-weight: 800; line-height: 1.1; }
+  .stat .n.verde { color: var(--verde); }
+  .stat .n.rosa { color: var(--rosa); }
+  .stat .n.oro { color: #c8890a; }
+  .stat .t { font-size: .68rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--gris); margin-top: 2px; }
+
+  /* Modo selección */
+  .modo-barra { text-align: center; margin-top: 18px; }
+  .btn {
+    font-family: inherit; font-size: 1rem; font-weight: 700;
+    padding: 12px 18px; border: none; border-radius: 12px; cursor: pointer;
+    min-height: 48px; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    transition: background .2s ease, transform .1s ease, box-shadow .2s ease;
+  }
+  .btn svg { width: 18px; height: 18px; }
+  .btn:active { transform: scale(.98); }
+  .btn:focus-visible { outline: 3px solid var(--azul); outline-offset: 2px; }
+  .btn-primario { background: var(--verde); color: #fff; }
+  .btn-primario:hover { background: var(--verde-oscuro); }
+  .btn-secundario { background: var(--azul); color: #fff; }
+  .btn-secundario:hover { background: #1a5980; }
+  .btn-neutro { background: #eef0f2; color: var(--tinta); }
+  .btn-neutro:hover { background: #e2e5e8; }
+  .btn-peligro { background: var(--rosa); color: #fff; }
+  .btn-peligro:hover { background: #c00f3a; }
+  .btn-modo { background: var(--azul-tint); color: var(--azul); border: 2px solid var(--azul); }
+  .btn-modo.activo { background: var(--azul); color: #fff; }
 
   .panel-seleccion {
-    display: none;
-    max-width: 640px;
-    margin: 12px auto 0;
-    padding: 14px 16px;
-    background: #eaf2f8;
-    border: 1px solid #aed0e6;
-    border-radius: 12px;
+    display: none; margin-top: 12px; padding: 16px;
+    background: var(--azul-tint); border: 1px solid #b8d6ea; border-radius: var(--radio);
   }
   .panel-seleccion.visible { display: block; }
-  .panel-seleccion .cuenta { font-weight: 700; color: var(--azul); text-align: center; margin-bottom: 8px; }
+  .panel-seleccion .cuenta { font-weight: 700; color: var(--azul); text-align: center; margin-bottom: 10px; }
   .panel-seleccion input {
-    width: 100%;
-    padding: 10px;
-    font-size: 1rem;
-    border: 2px solid #ddd;
-    border-radius: 8px;
-    margin-bottom: 10px;
+    width: 100%; padding: 12px; font-size: 1rem; font-family: inherit;
+    border: 2px solid #cfe0ec; border-radius: 10px; margin-bottom: 10px;
   }
-  .panel-seleccion .botones { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+  .panel-seleccion .botones { display: flex; gap: 8px; flex-wrap: wrap; }
+  .panel-seleccion .botones .btn { flex: 1 1 auto; }
 
-  .resumen {
-    text-align: center;
-    font-weight: 600;
-    color: var(--verde-oscuro);
-    margin: 8px 0;
+  /* Grid */
+  .grid {
+    display: grid; grid-template-columns: repeat(10, 1fr); gap: 7px;
+    margin: 20px auto 0;
+  }
+  .celda {
+    position: relative; aspect-ratio: 1;
+    background: var(--superficie); border: 1.5px solid var(--borde); border-radius: 12px;
+    display: grid; place-items: center;
+    font-size: clamp(.8rem, 3.2vw, 1.15rem); font-weight: 800; color: var(--verde-oscuro);
+    box-shadow: var(--sombra-sm); cursor: pointer; user-select: none;
+    transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease;
+  }
+  .celda:not(.vendido):hover { transform: translateY(-2px); border-color: var(--verde); }
+  .celda.vendido { background: var(--rosa); border-color: var(--rosa); color: #fff; box-shadow: 0 3px 8px rgba(225,29,72,.25); }
+  .celda.seleccionada { outline: 4px solid var(--azul); outline-offset: -2px; box-shadow: 0 0 0 3px rgba(36,113,163,.25); }
+  .celda .nombre-tag {
+    position: absolute; bottom: 3px; left: 3px; right: 3px;
+    font-size: .42rem; font-weight: 500; line-height: 1;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   }
 
-  .lista-vendidos {
-    max-width: 640px;
-    margin: 10px auto;
-    padding: 0 16px;
+  /* Tarjetas de sección (buscador y lista) */
+  .seccion { margin-top: 26px; }
+  .tarjeta {
+    background: var(--superficie); border: 1px solid var(--borde); border-radius: var(--radio);
+    box-shadow: var(--sombra-sm); padding: 18px;
   }
-  .lista-vendidos h3 { color: var(--azul); margin-bottom: 6px; }
-  .lista-vendidos table {
-    width: 100%;
-    border-collapse: collapse;
-    background: white;
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 2px 6px rgba(0,0,0,.08);
-    font-size: .9rem;
-  }
-  .lista-vendidos td, .lista-vendidos th {
-    padding: 7px 10px;
-    border-bottom: 1px solid #eee;
-    text-align: left;
-  }
-  .lista-vendidos th { background: #f4f6f7; }
+  .tarjeta h3 { display: flex; align-items: center; gap: 8px; color: var(--azul); font-size: 1.05rem; margin-bottom: 12px; }
+  .tarjeta h3 svg { width: 20px; height: 20px; }
 
-  .barra-acciones {
-    position: fixed;
-    bottom: 0; left: 0; right: 0;
-    background: white;
-    box-shadow: 0 -3px 12px rgba(0,0,0,.15);
-    padding: 12px 16px;
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-    flex-wrap: wrap;
+  .buscador-row { text-align: center; }
+  .buscador-row input {
+    width: 110px; text-align: center; font-size: 1.6rem; font-weight: 800; letter-spacing: 4px;
+    padding: 8px; border: 2px solid var(--borde); border-radius: 12px; font-family: inherit;
   }
-  button {
-    font-size: 1rem;
-    font-weight: 600;
-    padding: 10px 18px;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-  }
-  .btn-guardar { background: var(--verde); color: white; }
-  .btn-guardar:disabled { background: #aaa; cursor: not-allowed; }
-  .btn-descargar { background: var(--azul); color: white; }
-  .btn-config { background: #eee; color: var(--texto); }
+  .buscador-row input:focus-visible { outline: 3px solid var(--azul); outline-offset: 2px; border-color: var(--azul); }
+  .resultado-busq { margin-top: 12px; font-size: 1.05rem; min-height: 1.4em; }
+  .resultado-busq b { color: var(--azul); }
 
-  .estado {
-    text-align: center;
-    font-size: .9rem;
-    min-height: 1.2em;
-    margin-top: 6px;
-    width: 100%;
-  }
-  .estado.ok { color: var(--verde); }
-  .estado.error { color: var(--rojo); }
+  table { width: 100%; border-collapse: collapse; font-size: .95rem; }
+  table th, table td { padding: 9px 10px; border-bottom: 1px solid #eee; text-align: left; }
+  table th { color: var(--gris); font-size: .72rem; letter-spacing: .06em; text-transform: uppercase; }
+  table td.num-col { font-weight: 800; color: var(--rosa); }
+  .lista-vacia { text-align: center; color: var(--gris); padding: 8px 0; }
 
-  /* Modal simple */
+  /* Barra de acciones (en flujo, no fija — no tapa los números) */
+  .acciones {
+    margin: 26px 0 10px;
+    display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;
+  }
+  .acciones .btn { flex: 1 1 200px; }
+  .estado { text-align: center; font-size: .95rem; min-height: 1.4em; margin: 6px 0 30px; font-weight: 600; }
+  .estado.ok { color: var(--verde-oscuro); }
+  .estado.error { color: var(--rosa); }
+
+  /* Modales */
   .modal-fondo {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,.5);
-    z-index: 10;
-    align-items: center;
-    justify-content: center;
-    padding: 16px;
+    display: none; position: fixed; inset: 0; z-index: 50;
+    background: rgba(20,35,29,.55); align-items: center; justify-content: center; padding: 16px;
   }
   .modal-fondo.visible { display: flex; }
   .modal {
-    background: white;
-    border-radius: 14px;
-    padding: 22px;
-    max-width: 380px;
-    width: 100%;
+    background: var(--superficie); border-radius: 20px; padding: 24px;
+    max-width: 400px; width: 100%; box-shadow: var(--sombra-lg);
   }
-  .modal h3 { margin-bottom: 10px; }
+  .modal h3 { font-family: 'Fraunces', Georgia, serif; margin-bottom: 12px; }
+  .modal label { font-size: .88rem; font-weight: 600; color: var(--gris); }
   .modal input {
-    width: 100%;
-    padding: 10px;
-    font-size: 1rem;
-    border: 2px solid #ddd;
-    border-radius: 8px;
-    margin: 8px 0 14px;
+    width: 100%; padding: 12px; font-size: 1rem; font-family: inherit;
+    border: 2px solid var(--borde); border-radius: 10px; margin: 6px 0 14px;
   }
-  .modal .botones { display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap; }
-  .btn-liberar { background: var(--rojo); color: white; }
-  .btn-cancelar { background: #eee; }
-  .modal small { color: #888; display: block; margin-top: 8px; }
+  .modal input:focus-visible { outline: 3px solid var(--azul); outline-offset: 2px; border-color: var(--azul); }
+  .modal .botones { display: flex; gap: 8px; flex-wrap: wrap; }
+  .modal .botones .btn { flex: 1 1 auto; }
+  .modal small { color: var(--gris); display: block; margin-top: 8px; line-height: 1.5; }
+
+  @media (max-width: 520px) {
+    .grid { gap: 5px; }
+    .acciones .btn { flex: 1 1 100%; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; scroll-behavior: auto; }
+  }
 </style>
 </head>
 <body>
 
-<header>
-  <h1>🔧 Administración de la Rifa</h1>
-  <p>Tocá un número para marcarlo como vendido o liberarlo</p>
+<header class="hero">
+  <span class="cinta">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    Panel de administración
+  </span>
+  <h1>Gestión de la Rifa</h1>
+  <p>Marcá los números vendidos y consultá compradores</p>
 </header>
 
-<div class="instrucciones">
-  <b>¿Cómo funciona?</b> Tocá un número, escribí el nombre del comprador (opcional) y guardá.
-  Los cambios <b>no se publican</b> hasta que presiones <b>💾 Guardar en la página</b>
-  (necesita el token de GitHub, se configura una sola vez) o descargués el archivo y lo subás al repositorio.
-</div>
+<main class="contenedor">
 
-<div class="buscador">
-  <div class="caja">
-    <h3 style="color:var(--azul);margin-bottom:6px">🔎 ¿Quién compró un número?</h3>
-    <input type="text" id="inputBuscar" inputmode="numeric" maxlength="2" placeholder="00">
-    <div class="resultado" id="resultadoBuscar"></div>
+  <div class="instrucciones">
+    <b>¿Cómo funciona?</b> Tocá un número para marcarlo como vendido o liberarlo.
+    Con <b>Seleccionar varios</b> podés asignar el mismo comprador a muchos números a la vez.
   </div>
-</div>
 
-<div class="modo-barra">
-  <button class="btn-modo" id="btnModo">☑️ Seleccionar varios</button>
-</div>
+  <div class="resumen" id="resumen"></div>
 
-<div class="panel-seleccion" id="panelSeleccion">
-  <div class="cuenta" id="cuentaSeleccion">0 números seleccionados</div>
-  <input type="text" id="inputNombreMulti" placeholder="Nombre del comprador (opcional)">
-  <div class="botones">
-    <button class="btn-guardar" id="btnAsignarMulti">Marcar seleccionados como vendidos</button>
-    <button class="btn-liberar" id="btnLiberarMulti">Liberar seleccionados</button>
-    <button class="btn-cancelar" id="btnLimpiarSeleccion">Limpiar</button>
+  <div class="modo-barra">
+    <button class="btn btn-modo" id="btnModo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      <span>Seleccionar varios</span>
+    </button>
   </div>
-</div>
 
-<div class="resumen" id="resumen"></div>
-<div class="grid" id="grid"></div>
+  <div class="panel-seleccion" id="panelSeleccion">
+    <div class="cuenta" id="cuentaSeleccion">Ningún número seleccionado</div>
+    <input type="text" id="inputNombreMulti" placeholder="Nombre del comprador (opcional)">
+    <div class="botones">
+      <button class="btn btn-primario" id="btnAsignarMulti">Marcar vendidos</button>
+      <button class="btn btn-peligro" id="btnLiberarMulti">Liberar</button>
+      <button class="btn btn-neutro" id="btnLimpiarSeleccion">Limpiar</button>
+    </div>
+  </div>
 
-<div class="lista-vendidos" id="listaVendidos"></div>
+  <div class="grid" id="grid"></div>
 
-<div class="barra-acciones">
-  <button class="btn-guardar" id="btnGuardar">💾 Guardar en la página</button>
-  <button class="btn-descargar" id="btnDescargar">⬇️ Descargar numeros.json</button>
-  <button class="btn-config" id="btnConfig">⚙️ Configurar GitHub</button>
+  <section class="seccion">
+    <div class="tarjeta">
+      <h3>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        ¿Quién compró un número?
+      </h3>
+      <div class="buscador-row">
+        <input type="text" id="inputBuscar" inputmode="numeric" maxlength="2" placeholder="00">
+        <div class="resultado-busq" id="resultadoBuscar"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="seccion">
+    <div class="tarjeta">
+      <h3>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+        Números vendidos
+      </h3>
+      <div id="listaVendidos"></div>
+    </div>
+  </section>
+
+  <div class="acciones">
+    <button class="btn btn-primario" id="btnGuardar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+      Guardar en la página
+    </button>
+    <button class="btn btn-secundario" id="btnDescargar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Descargar
+    </button>
+    <button class="btn btn-neutro" id="btnConfig">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      Configurar GitHub
+    </button>
+  </div>
   <div class="estado" id="estado"></div>
-</div>
+</main>
 
 <!-- Modal número -->
 <div class="modal-fondo" id="modalNumero">
@@ -301,9 +292,9 @@
     <label>Nombre del comprador (opcional):</label>
     <input type="text" id="inputNombre" placeholder="Ej: María Rodríguez">
     <div class="botones">
-      <button class="btn-cancelar" id="btnCancelar">Cancelar</button>
-      <button class="btn-liberar" id="btnLiberar" style="display:none">Liberar número</button>
-      <button class="btn-guardar" id="btnMarcar">Marcar vendido</button>
+      <button class="btn btn-neutro" id="btnCancelar">Cancelar</button>
+      <button class="btn btn-peligro" id="btnLiberar" style="display:none">Liberar</button>
+      <button class="btn btn-primario" id="btnMarcar">Marcar vendido</button>
     </div>
   </div>
 </div>
@@ -311,19 +302,19 @@
 <!-- Modal configuración GitHub -->
 <div class="modal-fondo" id="modalConfig">
   <div class="modal">
-    <h3>⚙️ Configuración de GitHub</h3>
+    <h3>Configuración de GitHub</h3>
     <label>Usuario de GitHub:</label>
     <input type="text" id="cfgUsuario" placeholder="tu-usuario">
     <label>Nombre del repositorio:</label>
     <input type="text" id="cfgRepo" placeholder="rifa-numeros">
-    <label>Token de acceso (fine-grained, permiso Contents):</label>
+    <label>Token de acceso (permiso Contents):</label>
     <input type="password" id="cfgToken" placeholder="github_pat_...">
-    <small>El token se guarda solo en este navegador (localStorage).
-    Crealo en GitHub → Settings → Developer settings → Fine-grained tokens,
-    con acceso solo a este repositorio y permiso de <b>Contents: Read and write</b>.</small>
+    <small>El token se guarda solo en este dispositivo. Crealo en GitHub → Settings →
+    Developer settings → Fine-grained tokens, con acceso solo a este repositorio y
+    permiso de <b>Contents: Read and write</b>.</small>
     <div class="botones" style="margin-top:14px">
-      <button class="btn-cancelar" id="cfgCancelar">Cancelar</button>
-      <button class="btn-guardar" id="cfgGuardar">Guardar configuración</button>
+      <button class="btn btn-neutro" id="cfgCancelar">Cancelar</button>
+      <button class="btn btn-primario" id="cfgGuardar">Guardar</button>
     </div>
   </div>
 </div>
@@ -357,8 +348,8 @@
     for (let i = 0; i < 100; i++) {
       const num = i.toString().padStart(2, '0');
       const celda = document.createElement('div');
-      celda.className = 'numero-celda';
-      celda.textContent = num;
+      celda.className = 'celda';
+      celda.appendChild(document.createTextNode(num));
       if (num in vendidos) {
         celda.classList.add('vendido');
         if (vendidos[num]) {
@@ -374,15 +365,37 @@
     }
 
     const cant = Object.keys(vendidos).length;
-    resumen.textContent = `${cant} vendidos · ${100 - cant} disponibles · Recaudado: ₡${(cant * 2000).toLocaleString('es-CR')}`;
+    resumen.innerHTML = `
+      <div class="stat"><div class="n rosa">${cant}</div><div class="t">Vendidos</div></div>
+      <div class="stat"><div class="n verde">${100 - cant}</div><div class="t">Disponibles</div></div>
+      <div class="stat"><div class="n oro">₡${(cant * 2000).toLocaleString('es-CR')}</div><div class="t">Recaudado</div></div>`;
 
     const nums = Object.keys(vendidos).sort();
     if (nums.length === 0) {
-      listaVendidos.innerHTML = '';
+      listaVendidos.innerHTML = '<div class="lista-vacia">Todavía no hay números vendidos.</div>';
     } else {
-      let filas = nums.map(n => `<tr><td><b>${n}</b></td><td>${vendidos[n] || '—'}</td></tr>`).join('');
-      listaVendidos.innerHTML = `<h3>Números vendidos</h3>
-        <table><tr><th>Número</th><th>Comprador</th></tr>${filas}</table>`;
+      let filas = nums.map(n => `<tr><td class="num-col">${n}</td><td>${escapar(vendidos[n]) || '—'}</td></tr>`).join('');
+      listaVendidos.innerHTML = `<table><tr><th>Número</th><th>Comprador</th></tr>${filas}</table>`;
+    }
+    actualizarBusqueda();
+  }
+
+  function escapar(t) {
+    if (!t) return '';
+    const d = document.createElement('div');
+    d.textContent = t;
+    return d.innerHTML;
+  }
+
+  // ---------- Clic en número ----------
+  function clicNumero(num) {
+    if (modoSeleccion) {
+      if (seleccionados.has(num)) seleccionados.delete(num);
+      else seleccionados.add(num);
+      render();
+      actualizarPanelSeleccion();
+    } else {
+      abrirModalNumero(num);
     }
   }
 
@@ -397,8 +410,8 @@
     document.getElementById('modalTitulo').textContent = 'Número ' + num;
     const yaVendido = num in vendidos;
     inputNombre.value = yaVendido ? (vendidos[num] || '') : '';
-    btnLiberar.style.display = yaVendido ? 'inline-block' : 'none';
-    btnMarcar.textContent = yaVendido ? 'Actualizar nombre' : 'Marcar vendido';
+    btnLiberar.style.display = yaVendido ? 'inline-flex' : 'none';
+    btnMarcar.textContent = yaVendido ? 'Actualizar' : 'Marcar vendido';
     modalNumero.classList.add('visible');
     inputNombre.focus();
   }
@@ -409,30 +422,15 @@
     render();
     mostrarEstado('Cambio pendiente: recordá guardar.', 'ok');
   };
-
   btnLiberar.onclick = () => {
     delete vendidos[numeroActual];
     cerrarModales();
     render();
     mostrarEstado('Cambio pendiente: recordá guardar.', 'ok');
   };
-
   document.getElementById('btnCancelar').onclick = cerrarModales;
-
   function cerrarModales() {
     document.querySelectorAll('.modal-fondo').forEach(m => m.classList.remove('visible'));
-  }
-
-  // ---------- Clic en número (según modo) ----------
-  function clicNumero(num) {
-    if (modoSeleccion) {
-      if (seleccionados.has(num)) seleccionados.delete(num);
-      else seleccionados.add(num);
-      render();
-      actualizarPanelSeleccion();
-    } else {
-      abrirModalNumero(num);
-    }
   }
 
   // ---------- Modo selección múltiple ----------
@@ -444,7 +442,7 @@
     modoSeleccion = !modoSeleccion;
     seleccionados.clear();
     btnModo.classList.toggle('activo', modoSeleccion);
-    btnModo.textContent = modoSeleccion ? '✖️ Salir de selección múltiple' : '☑️ Seleccionar varios';
+    btnModo.querySelector('span').textContent = modoSeleccion ? 'Salir de selección múltiple' : 'Seleccionar varios';
     panelSeleccion.classList.toggle('visible', modoSeleccion);
     render();
     actualizarPanelSeleccion();
@@ -468,7 +466,6 @@
     actualizarPanelSeleccion();
     mostrarEstado(`${cuantos} números marcados como vendidos. Recordá guardar.`, 'ok');
   };
-
   document.getElementById('btnLiberarMulti').onclick = () => {
     if (seleccionados.size === 0) { mostrarEstado('Primero tocá los números que querés liberar.', 'error'); return; }
     const cuantos = seleccionados.size;
@@ -478,7 +475,6 @@
     actualizarPanelSeleccion();
     mostrarEstado(`${cuantos} números liberados. Recordá guardar.`, 'ok');
   };
-
   document.getElementById('btnLimpiarSeleccion').onclick = () => {
     seleccionados.clear();
     render();
@@ -487,7 +483,8 @@
 
   // ---------- Buscador ----------
   const inputBuscar = document.getElementById('inputBuscar');
-  inputBuscar.addEventListener('input', () => {
+  inputBuscar.addEventListener('input', actualizarBusqueda);
+  function actualizarBusqueda() {
     const raw = inputBuscar.value.replace(/\D/g, '');
     const resultado = document.getElementById('resultadoBuscar');
     if (raw === '') { resultado.innerHTML = ''; return; }
@@ -495,11 +492,11 @@
     if (!(num in vendidos)) {
       resultado.innerHTML = `El número <b>${num}</b> está <b>disponible</b> ✅`;
     } else if (vendidos[num]) {
-      resultado.innerHTML = `El número <b>${num}</b> lo compró: <b>${vendidos[num]}</b>`;
+      resultado.innerHTML = `El número <b>${num}</b> lo compró: <b>${escapar(vendidos[num])}</b>`;
     } else {
       resultado.innerHTML = `El número <b>${num}</b> está vendido (sin nombre registrado)`;
     }
-  });
+  }
 
   // ---------- Descargar JSON ----------
   document.getElementById('btnDescargar').onclick = () => {
@@ -511,7 +508,6 @@
     URL.revokeObjectURL(a.href);
     mostrarEstado('Archivo descargado. Subilo al repositorio para publicar los cambios.', 'ok');
   };
-
   function jsonActual() {
     const ordenado = {};
     Object.keys(vendidos).sort().forEach(k => ordenado[k] = vendidos[k]);
@@ -520,7 +516,6 @@
 
   // ---------- Configuración GitHub ----------
   const modalConfig = document.getElementById('modalConfig');
-
   function leerConfig() {
     return {
       usuario: localStorage.getItem('rifa_gh_usuario') || '',
@@ -528,10 +523,8 @@
       token: localStorage.getItem('rifa_gh_token') || ''
     };
   }
-
   document.getElementById('btnConfig').onclick = () => {
     const cfg = leerConfig();
-    // Autodetectar usuario/repo si estamos en *.github.io/repo
     if (!cfg.usuario && location.hostname.endsWith('.github.io')) {
       cfg.usuario = location.hostname.split('.')[0];
       const partes = location.pathname.split('/').filter(Boolean);
@@ -542,58 +535,38 @@
     document.getElementById('cfgToken').value = cfg.token;
     modalConfig.classList.add('visible');
   };
-
   document.getElementById('cfgCancelar').onclick = cerrarModales;
-
   document.getElementById('cfgGuardar').onclick = () => {
     localStorage.setItem('rifa_gh_usuario', document.getElementById('cfgUsuario').value.trim());
     localStorage.setItem('rifa_gh_repo', document.getElementById('cfgRepo').value.trim());
     localStorage.setItem('rifa_gh_token', document.getElementById('cfgToken').value.trim());
     cerrarModales();
-    mostrarEstado('Configuración guardada en este navegador.', 'ok');
+    mostrarEstado('Configuración guardada en este dispositivo.', 'ok');
   };
 
   // ---------- Guardar vía API de GitHub ----------
   document.getElementById('btnGuardar').onclick = async () => {
     const cfg = leerConfig();
     if (!cfg.usuario || !cfg.repo || !cfg.token) {
-      mostrarEstado('Primero configurá GitHub con el botón ⚙️ (o usá ⬇️ Descargar).', 'error');
+      mostrarEstado('Primero configurá GitHub con el botón ⚙️ (o usá Descargar).', 'error');
       return;
     }
-
     const btn = document.getElementById('btnGuardar');
     btn.disabled = true;
     mostrarEstado('Guardando...', 'ok');
-
     try {
       const api = `https://api.github.com/repos/${cfg.usuario}/${cfg.repo}/contents/numeros.json`;
-      const headers = {
-        'Authorization': 'Bearer ' + cfg.token,
-        'Accept': 'application/vnd.github+json'
-      };
-
-      // Obtener el SHA actual del archivo (necesario para actualizarlo)
+      const headers = { 'Authorization': 'Bearer ' + cfg.token, 'Accept': 'application/vnd.github+json' };
       let sha = null;
       const getResp = await fetch(api, { headers });
       if (getResp.ok) sha = (await getResp.json()).sha;
-
-      const body = {
-        message: 'Actualizar números vendidos',
-        content: btoa(unescape(encodeURIComponent(jsonActual())))
-      };
+      const body = { message: 'Actualizar números vendidos', content: btoa(unescape(encodeURIComponent(jsonActual()))) };
       if (sha) body.sha = sha;
-
-      const putResp = await fetch(api, {
-        method: 'PUT',
-        headers,
-        body: JSON.stringify(body)
-      });
-
+      const putResp = await fetch(api, { method: 'PUT', headers, body: JSON.stringify(body) });
       if (!putResp.ok) {
         const err = await putResp.json().catch(() => ({}));
         throw new Error(err.message || ('Error HTTP ' + putResp.status));
       }
-
       mostrarEstado('✅ Guardado. La página pública se actualiza en 1-2 minutos.', 'ok');
     } catch (e) {
       mostrarEstado('❌ Error al guardar: ' + e.message, 'error');
