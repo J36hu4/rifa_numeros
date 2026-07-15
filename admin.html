@@ -82,6 +82,73 @@
     text-overflow: ellipsis;
     white-space: nowrap;
   }
+  .numero-celda.seleccionada {
+    outline: 4px solid var(--azul);
+    outline-offset: -2px;
+    box-shadow: 0 0 0 3px rgba(36,113,163,.25);
+  }
+
+  /* Buscador */
+  .buscador {
+    max-width: 640px;
+    margin: 16px auto 0;
+    padding: 0 16px;
+    text-align: center;
+  }
+  .buscador .caja {
+    background: white;
+    border-radius: 12px;
+    padding: 14px 16px;
+    box-shadow: 0 2px 6px rgba(0,0,0,.08);
+    border-top: 4px solid var(--azul);
+  }
+  .buscador input {
+    width: 90px;
+    text-align: center;
+    font-size: 1.4rem;
+    font-weight: 700;
+    letter-spacing: 3px;
+    padding: 6px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+  }
+  .buscador .resultado { margin-top: 10px; font-size: 1.05rem; min-height: 1.3em; }
+  .buscador .resultado b { color: var(--azul); }
+
+  /* Modo selección múltiple */
+  .modo-barra {
+    max-width: 640px;
+    margin: 16px auto 0;
+    padding: 0 16px;
+    text-align: center;
+  }
+  .btn-modo {
+    background: #eaf2f8;
+    color: var(--azul);
+    border: 2px solid var(--azul);
+  }
+  .btn-modo.activo { background: var(--azul); color: white; }
+
+  .panel-seleccion {
+    display: none;
+    max-width: 640px;
+    margin: 12px auto 0;
+    padding: 14px 16px;
+    background: #eaf2f8;
+    border: 1px solid #aed0e6;
+    border-radius: 12px;
+  }
+  .panel-seleccion.visible { display: block; }
+  .panel-seleccion .cuenta { font-weight: 700; color: var(--azul); text-align: center; margin-bottom: 8px; }
+  .panel-seleccion input {
+    width: 100%;
+    padding: 10px;
+    font-size: 1rem;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 10px;
+  }
+  .panel-seleccion .botones { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
 
   .resumen {
     text-align: center;
@@ -193,6 +260,28 @@
   (necesita el token de GitHub, se configura una sola vez) o descargués el archivo y lo subás al repositorio.
 </div>
 
+<div class="buscador">
+  <div class="caja">
+    <h3 style="color:var(--azul);margin-bottom:6px">🔎 ¿Quién compró un número?</h3>
+    <input type="text" id="inputBuscar" inputmode="numeric" maxlength="2" placeholder="00">
+    <div class="resultado" id="resultadoBuscar"></div>
+  </div>
+</div>
+
+<div class="modo-barra">
+  <button class="btn-modo" id="btnModo">☑️ Seleccionar varios</button>
+</div>
+
+<div class="panel-seleccion" id="panelSeleccion">
+  <div class="cuenta" id="cuentaSeleccion">0 números seleccionados</div>
+  <input type="text" id="inputNombreMulti" placeholder="Nombre del comprador (opcional)">
+  <div class="botones">
+    <button class="btn-guardar" id="btnAsignarMulti">Marcar seleccionados como vendidos</button>
+    <button class="btn-liberar" id="btnLiberarMulti">Liberar seleccionados</button>
+    <button class="btn-cancelar" id="btnLimpiarSeleccion">Limpiar</button>
+  </div>
+</div>
+
 <div class="resumen" id="resumen"></div>
 <div class="grid" id="grid"></div>
 
@@ -242,6 +331,8 @@
 <script>
   let vendidos = {};      // { "07": "Nombre" }
   let numeroActual = null;
+  let modoSeleccion = false;
+  let seleccionados = new Set();
 
   const grid = document.getElementById('grid');
   const resumen = document.getElementById('resumen');
@@ -277,7 +368,8 @@
           celda.appendChild(tag);
         }
       }
-      celda.onclick = () => abrirModalNumero(num);
+      if (seleccionados.has(num)) celda.classList.add('seleccionada');
+      celda.onclick = () => clicNumero(num);
       grid.appendChild(celda);
     }
 
@@ -330,6 +422,84 @@
   function cerrarModales() {
     document.querySelectorAll('.modal-fondo').forEach(m => m.classList.remove('visible'));
   }
+
+  // ---------- Clic en número (según modo) ----------
+  function clicNumero(num) {
+    if (modoSeleccion) {
+      if (seleccionados.has(num)) seleccionados.delete(num);
+      else seleccionados.add(num);
+      render();
+      actualizarPanelSeleccion();
+    } else {
+      abrirModalNumero(num);
+    }
+  }
+
+  // ---------- Modo selección múltiple ----------
+  const btnModo = document.getElementById('btnModo');
+  const panelSeleccion = document.getElementById('panelSeleccion');
+  const inputNombreMulti = document.getElementById('inputNombreMulti');
+
+  btnModo.onclick = () => {
+    modoSeleccion = !modoSeleccion;
+    seleccionados.clear();
+    btnModo.classList.toggle('activo', modoSeleccion);
+    btnModo.textContent = modoSeleccion ? '✖️ Salir de selección múltiple' : '☑️ Seleccionar varios';
+    panelSeleccion.classList.toggle('visible', modoSeleccion);
+    render();
+    actualizarPanelSeleccion();
+  };
+
+  function actualizarPanelSeleccion() {
+    const n = seleccionados.size;
+    const lista = [...seleccionados].sort().join(', ');
+    document.getElementById('cuentaSeleccion').textContent =
+      n === 0 ? 'Ningún número seleccionado' : `${n} seleccionados: ${lista}`;
+  }
+
+  document.getElementById('btnAsignarMulti').onclick = () => {
+    if (seleccionados.size === 0) { mostrarEstado('Primero tocá los números que querés marcar.', 'error'); return; }
+    const nombre = inputNombreMulti.value.trim();
+    seleccionados.forEach(num => vendidos[num] = nombre);
+    const cuantos = seleccionados.size;
+    seleccionados.clear();
+    inputNombreMulti.value = '';
+    render();
+    actualizarPanelSeleccion();
+    mostrarEstado(`${cuantos} números marcados como vendidos. Recordá guardar.`, 'ok');
+  };
+
+  document.getElementById('btnLiberarMulti').onclick = () => {
+    if (seleccionados.size === 0) { mostrarEstado('Primero tocá los números que querés liberar.', 'error'); return; }
+    const cuantos = seleccionados.size;
+    seleccionados.forEach(num => delete vendidos[num]);
+    seleccionados.clear();
+    render();
+    actualizarPanelSeleccion();
+    mostrarEstado(`${cuantos} números liberados. Recordá guardar.`, 'ok');
+  };
+
+  document.getElementById('btnLimpiarSeleccion').onclick = () => {
+    seleccionados.clear();
+    render();
+    actualizarPanelSeleccion();
+  };
+
+  // ---------- Buscador ----------
+  const inputBuscar = document.getElementById('inputBuscar');
+  inputBuscar.addEventListener('input', () => {
+    const raw = inputBuscar.value.replace(/\D/g, '');
+    const resultado = document.getElementById('resultadoBuscar');
+    if (raw === '') { resultado.innerHTML = ''; return; }
+    const num = raw.padStart(2, '0');
+    if (!(num in vendidos)) {
+      resultado.innerHTML = `El número <b>${num}</b> está <b>disponible</b> ✅`;
+    } else if (vendidos[num]) {
+      resultado.innerHTML = `El número <b>${num}</b> lo compró: <b>${vendidos[num]}</b>`;
+    } else {
+      resultado.innerHTML = `El número <b>${num}</b> está vendido (sin nombre registrado)`;
+    }
+  });
 
   // ---------- Descargar JSON ----------
   document.getElementById('btnDescargar').onclick = () => {

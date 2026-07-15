@@ -34,7 +34,14 @@ La página de administración queda en:
 
 ## Cómo marcar números vendidos
 
-Entrá a `admin.html`, tocá un número, escribí el nombre del comprador (opcional) y guardá. Hay dos formas de publicar los cambios:
+Entrá a `admin.html`, tocá un número, escribí el nombre del comprador (opcional) y guardá.
+
+También podés:
+
+- **🔎 Buscar quién compró un número:** escribí el número en la caja de búsqueda y te dice el comprador (o si está disponible).
+- **☑️ Seleccionar varios:** activá el modo "Seleccionar varios", tocá todos los números que quiera la misma persona, escribí el nombre una sola vez y marcalos todos juntos (o liberalos juntos).
+
+Hay dos formas de publicar los cambios:
 
 ### Opción A — Guardar directo desde la página (recomendada)
 1. En GitHub: **Settings → Developer settings → Fine-grained personal access tokens → Generate new token**.
