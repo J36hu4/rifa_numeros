@@ -181,6 +181,21 @@
   .btn-copiar:active { transform: scale(.97); }
   .btn-copiar:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
 
+  .compartir { text-align: center; margin-top: 28px; }
+  .btn-imagen {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: var(--verde); color: #fff;
+    border: none; border-radius: 14px; padding: 15px 26px;
+    font-family: inherit; font-size: 1.02rem; font-weight: 800; cursor: pointer;
+    box-shadow: var(--sombra-md);
+    transition: background .2s ease, transform .1s ease;
+  }
+  .btn-imagen svg { width: 20px; height: 20px; }
+  .btn-imagen:hover { background: var(--verde-oscuro); }
+  .btn-imagen:active { transform: scale(.98); }
+  .btn-imagen:disabled { background: #9db3aa; cursor: default; }
+  .btn-imagen:focus-visible { outline: 3px solid var(--verde-oscuro); outline-offset: 3px; }
+
   /* ---------- SECCIÓN NÚMEROS ---------- */
   .numeros { margin-top: 48px; }
   .titulo-sec { text-align: center; }
@@ -341,6 +356,13 @@
     </div>
 
     <div class="grid" id="grid"></div>
+
+    <div class="compartir">
+      <button class="btn-imagen" id="btnImagen">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+        <span id="txtImagen">Descargar imagen para compartir</span>
+      </button>
+    </div>
   </section>
 </main>
 
@@ -354,8 +376,10 @@
   const contador = document.getElementById('contador');
   const barra = document.getElementById('barra');
 
+  let vendidos = {};
+
   async function cargar() {
-    let vendidos = {};
+    vendidos = {};
     try {
       const resp = await fetch('numeros.json?v=' + Date.now());
       const data = await resp.json();
@@ -393,6 +417,170 @@
       txtCopiar.textContent = numero;
     }
   });
+
+  // ---------- Generar imagen para compartir ----------
+  const btnImagen = document.getElementById('btnImagen');
+  const txtImagen = document.getElementById('txtImagen');
+
+  btnImagen.addEventListener('click', async () => {
+    btnImagen.disabled = true;
+    txtImagen.textContent = 'Generando...';
+    try {
+      try { await document.fonts.ready; } catch (e) {}
+      const canvas = dibujarImagen();
+      const nombre = 'rifa-9-agosto.png';
+      canvas.toBlob((blob) => {
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = nombre;
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+        txtImagen.textContent = '¡Imagen lista!';
+        setTimeout(() => txtImagen.textContent = 'Descargar imagen para compartir', 2200);
+        btnImagen.disabled = false;
+      }, 'image/png');
+    } catch (e) {
+      console.error(e);
+      txtImagen.textContent = 'Descargar imagen para compartir';
+      btnImagen.disabled = false;
+    }
+  });
+
+  function dibujarImagen() {
+    const W = 1080, M = 56, cardW = W - M * 2;
+    const gap = 10, cols = 10;
+    const cell = Math.floor((cardW - gap * (cols - 1)) / cols);
+    const gridH = cell * 10 + gap * 9;
+
+    // Alturas de cada bloque
+    const hHeader = 300, hPremio = 240, hInfo = 160, hSinpe = 168, hSecTit = 96, hLeg = 54, hFoot = 96;
+    const s = 28; // separación
+    let y = 0;
+    const yHeader = y;                       y += hHeader + s;
+    const yPremio = y;                       y += hPremio + s;
+    const yInfo = y;                         y += hInfo + s;
+    const ySinpe = y;                        y += hSinpe + 40;
+    const ySecTit = y;                       y += hSecTit + 16;
+    const yGrid = y;                         y += gridH + 26;
+    const yLeg = y;                          y += hLeg + 30;
+    const yFoot = y;                         y += hFoot + 30;
+    const H = y;
+
+    const c = document.createElement('canvas');
+    c.width = W; c.height = H;
+    const ctx = c.getContext('2d');
+
+    const F = "'Plus Jakarta Sans', Arial, sans-serif";
+    const FS = "'Fraunces', Georgia, serif";
+    const COL = { crema:'#fbf7f0', verde:'#0f9d63', verdeOsc:'#0a6b45', verdeTint:'#e7f6ef',
+                  oro:'#e0870a', tinta:'#14231d', gris:'#5f7169', rosa:'#e11d48',
+                  borde:'#e7e0d4', blanco:'#ffffff' };
+
+    function rr(x, yy, w, h, r) {
+      ctx.beginPath();
+      ctx.moveTo(x + r, yy);
+      ctx.arcTo(x + w, yy, x + w, yy + h, r);
+      ctx.arcTo(x + w, yy + h, x, yy + h, r);
+      ctx.arcTo(x, yy + h, x, yy, r);
+      ctx.arcTo(x, yy, x + w, yy, r);
+      ctx.closePath();
+    }
+    function txt(t, x, yy, font, color, align) {
+      ctx.font = font; ctx.fillStyle = color; ctx.textAlign = align || 'center';
+      ctx.textBaseline = 'middle'; ctx.fillText(t, x, yy);
+    }
+
+    // Fondo
+    ctx.fillStyle = COL.crema; ctx.fillRect(0, 0, W, H);
+
+    // Header (verde, esquinas inferiores redondeadas)
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(0, yHeader);
+    ctx.lineTo(W, yHeader);
+    ctx.lineTo(W, yHeader + hHeader - 40);
+    ctx.arcTo(W, yHeader + hHeader, W - 40, yHeader + hHeader, 40);
+    ctx.lineTo(40, yHeader + hHeader);
+    ctx.arcTo(0, yHeader + hHeader, 0, yHeader + hHeader - 40, 40);
+    ctx.closePath();
+    const gh = ctx.createLinearGradient(0, yHeader, W, yHeader + hHeader);
+    gh.addColorStop(0, '#12a869'); gh.addColorStop(1, COL.verdeOsc);
+    ctx.fillStyle = gh; ctx.fill();
+    ctx.restore();
+    txt('Rifa de números · 00 al 99', W/2, yHeader + 78, "700 26px " + F, 'rgba(255,255,255,.9)');
+    txt('Gran Rifa', W/2, yHeader + 165, "700 96px " + FS, COL.blanco);
+    txt('Escogé tu número de la suerte', W/2, yHeader + 240, "500 28px " + F, 'rgba(255,255,255,.92)');
+
+    // Tarjeta premio
+    ctx.fillStyle = COL.blanco; rr(M, yPremio, cardW, hPremio, 26); ctx.fill();
+    ctx.strokeStyle = COL.borde; ctx.lineWidth = 1.5; ctx.stroke();
+    txt('PREMIO MAYOR', W/2, yPremio + 46, "800 24px " + F, COL.verde);
+    const gp = ctx.createLinearGradient(0, yPremio + 70, 0, yPremio + 170);
+    gp.addColorStop(0, '#f2a71b'); gp.addColorStop(1, COL.oro);
+    ctx.save(); ctx.font = "700 104px " + FS; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillStyle = gp; ctx.fillText('₡100.000', W/2, yPremio + 132); ctx.restore();
+    txt('Cien mil colones', W/2, yPremio + 200, "700 26px " + F, COL.gris);
+
+    // Info: fecha y costo
+    const iw = (cardW - 24) / 2;
+    // Fecha
+    ctx.fillStyle = COL.blanco; rr(M, yInfo, iw, hInfo, 20); ctx.fill();
+    ctx.strokeStyle = COL.borde; ctx.lineWidth = 1.5; ctx.stroke();
+    txt('FECHA DEL SORTEO', M + iw/2, yInfo + 40, "800 20px " + F, COL.gris);
+    txt('Domingo 9 de agosto', M + iw/2, yInfo + 84, "800 30px " + F, COL.tinta);
+    txt('Con la Lotería Nacional', M + iw/2, yInfo + 122, "500 20px " + F, COL.gris);
+    // Costo
+    const cx = M + iw + 24;
+    ctx.fillStyle = COL.blanco; rr(cx, yInfo, iw, hInfo, 20); ctx.fill();
+    ctx.strokeStyle = COL.borde; ctx.lineWidth = 1.5; ctx.stroke();
+    txt('COSTO DEL NÚMERO', cx + iw/2, yInfo + 40, "800 20px " + F, COL.gris);
+    txt('₡2.000', cx + iw/2, yInfo + 86, "800 38px " + F, COL.tinta);
+    txt('Cada número, del 00 al 99', cx + iw/2, yInfo + 126, "500 20px " + F, COL.gris);
+
+    // SINPE (oscuro)
+    ctx.fillStyle = '#12241c'; rr(M, ySinpe, cardW, hSinpe, 20); ctx.fill();
+    txt('PAGÁ POR SINPE MÓVIL', W/2, ySinpe + 42, "800 22px " + F, '#ffd35c');
+    txt('6443-1669', W/2, ySinpe + 92, "800 52px " + F, COL.blanco);
+    txt('Jeshua Herrera Salas', W/2, ySinpe + 138, "600 24px " + F, 'rgba(255,255,255,.8)');
+
+    // Título sección + conteo
+    const cant = Object.keys(vendidos).length;
+    txt('Elegí tu número', W/2, ySecTit + 34, "700 44px " + FS, COL.verdeOsc);
+    txt((100 - cant) + ' disponibles  ·  ' + cant + ' vendidos', W/2, ySecTit + 78, "700 24px " + F, COL.gris);
+
+    // Cuadrícula
+    for (let i = 0; i < 100; i++) {
+      const num = i.toString().padStart(2, '0');
+      const col = i % 10, row = Math.floor(i / 10);
+      const x = M + col * (cell + gap);
+      const yy = yGrid + row * (cell + gap);
+      const esVendido = num in vendidos;
+      rr(x, yy, cell, cell, 14);
+      if (esVendido) {
+        ctx.fillStyle = COL.rosa; ctx.fill();
+        txt(num, x + cell/2, yy + cell/2, "800 " + Math.round(cell*0.4) + "px " + F, COL.blanco);
+      } else {
+        ctx.fillStyle = COL.blanco; ctx.fill();
+        ctx.strokeStyle = COL.verde; ctx.lineWidth = 2; ctx.stroke();
+        txt(num, x + cell/2, yy + cell/2, "800 " + Math.round(cell*0.4) + "px " + F, COL.verdeOsc);
+      }
+    }
+
+    // Leyenda
+    const ly = yLeg + hLeg/2;
+    ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+    ctx.fillStyle = COL.blanco; rr(W/2 - 250, ly - 13, 26, 26, 7); ctx.fill();
+    ctx.strokeStyle = COL.verde; ctx.lineWidth = 2.5; ctx.stroke();
+    txt('Disponible', W/2 - 214, ly, "600 24px " + F, COL.gris, 'left');
+    ctx.fillStyle = COL.rosa; rr(W/2 + 40, ly - 13, 26, 26, 7); ctx.fill();
+    txt('Vendido', W/2 + 76, ly, "600 24px " + F, COL.gris, 'left');
+
+    // Footer
+    txt('Juega el domingo 9 de agosto con la Lotería Nacional', W/2, yFoot + 34, "700 24px " + F, COL.verdeOsc);
+    txt('¡Mucha suerte! 🍀', W/2, yFoot + 70, "500 22px " + F, COL.gris);
+
+    return c;
+  }
 
   cargar();
 </script>
