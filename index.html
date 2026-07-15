@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rifa de Números 🎉</title>
+<style>
+  :root {
+    --verde: #1b7a43;
+    --verde-oscuro: #145c33;
+    --crema: #faf6ef;
+    --rojo: #c0392b;
+    --dorado: #e6a817;
+    --texto: #2c3e50;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: var(--crema);
+    color: var(--texto);
+    min-height: 100vh;
+  }
+  header {
+    background: linear-gradient(135deg, var(--verde), var(--verde-oscuro));
+    color: white;
+    text-align: center;
+    padding: 28px 16px 22px;
+  }
+  header h1 { font-size: 2rem; letter-spacing: 1px; }
+  header p { opacity: .9; margin-top: 4px; }
+
+  .info {
+    max-width: 900px;
+    margin: 24px auto;
+    padding: 0 16px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+  }
+  .tarjeta {
+    background: white;
+    border-radius: 14px;
+    padding: 18px;
+    text-align: center;
+    box-shadow: 0 3px 10px rgba(0,0,0,.08);
+    border-top: 4px solid var(--verde);
+  }
+  .tarjeta .icono { font-size: 2rem; }
+  .tarjeta h3 { margin: 6px 0 4px; font-size: .85rem; text-transform: uppercase; letter-spacing: 1px; color: #888; }
+  .tarjeta p { font-size: 1.15rem; font-weight: 700; }
+  .tarjeta small { color: #777; font-weight: 400; }
+
+  .premio-banner {
+    max-width: 900px;
+    margin: 0 auto 8px;
+    padding: 0 16px;
+  }
+  .premio-banner .caja {
+    background: linear-gradient(135deg, var(--dorado), #f5c542);
+    border-radius: 14px;
+    text-align: center;
+    padding: 22px;
+    color: #5b3d00;
+    box-shadow: 0 3px 10px rgba(0,0,0,.12);
+  }
+  .premio-banner .caja .monto { font-size: 2.4rem; font-weight: 800; }
+  .premio-banner img {
+    display: block;
+    width: 100%;
+    max-height: 320px;
+    object-fit: cover;
+    border-radius: 14px;
+    margin-top: 12px;
+    box-shadow: 0 3px 10px rgba(0,0,0,.12);
+  }
+
+  .sinpe {
+    max-width: 900px;
+    margin: 0 auto 24px;
+    padding: 0 16px;
+    text-align: center;
+  }
+  .sinpe .caja {
+    background: white;
+    border-radius: 14px;
+    padding: 16px;
+    box-shadow: 0 3px 10px rgba(0,0,0,.08);
+    border-top: 4px solid var(--rojo);
+  }
+  .sinpe .numero { font-size: 1.6rem; font-weight: 800; color: var(--rojo); letter-spacing: 2px; }
+
+  h2.titulo-grid {
+    text-align: center;
+    margin: 10px 0 4px;
+    color: var(--verde-oscuro);
+  }
+  .leyenda {
+    text-align: center;
+    margin-bottom: 14px;
+    font-size: .9rem;
+    color: #666;
+  }
+  .leyenda span { display: inline-block; margin: 0 10px; }
+  .punto {
+    display: inline-block;
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    margin-right: 5px;
+    vertical-align: middle;
+  }
+  .punto.libre { background: white; border: 2px solid var(--verde); }
+  .punto.ocupado { background: var(--rojo); border: 2px solid var(--rojo); }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 6px;
+    max-width: 640px;
+    margin: 0 auto 40px;
+    padding: 0 12px;
+  }
+  .numero-celda {
+    position: relative;
+    aspect-ratio: 1;
+    background: white;
+    border: 2px solid var(--verde);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: clamp(.9rem, 3.5vw, 1.3rem);
+    font-weight: 700;
+    color: var(--verde-oscuro);
+  }
+  .numero-celda.vendido {
+    background: #f9e9e7;
+    border-color: #e0b4ae;
+    color: #c9a19b;
+  }
+  .numero-celda.vendido::after {
+    content: "VENDIDO";
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: clamp(.35rem, 1.6vw, .55rem);
+    font-weight: 800;
+    color: var(--rojo);
+    border: 2px solid var(--rojo);
+    border-radius: 6px;
+    margin: 15%;
+    transform: rotate(-18deg);
+    background: rgba(255,255,255,.55);
+    letter-spacing: 1px;
+  }
+
+  .contador {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 1.05rem;
+    color: var(--verde-oscuro);
+    font-weight: 600;
+  }
+
+  footer {
+    text-align: center;
+    padding: 18px;
+    color: #999;
+    font-size: .85rem;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🎉 Gran Rifa 🎉</h1>
+  <p>¡Escogé tu número de la suerte!</p>
+</header>
+
+<div class="premio-banner">
+  <div class="caja">
+    <div>🏆 PREMIO</div>
+    <div class="monto">₡100.000</div>
+    <div>Cien mil colones</div>
+  </div>
+  <img src="premio.jpg" alt="Premio: 100 mil colones" onerror="this.remove()">
+</div>
+
+<div class="info">
+  <div class="tarjeta">
+    <div class="icono">📅</div>
+    <h3>Fecha del sorteo</h3>
+    <p>Domingo 9 de agosto</p>
+    <small>Juega con la Lotería Nacional</small>
+  </div>
+  <div class="tarjeta">
+    <div class="icono">🎟️</div>
+    <h3>Costo del número</h3>
+    <p>₡2.000</p>
+    <small>Cada número, del 00 al 99</small>
+  </div>
+</div>
+
+<div class="sinpe">
+  <div class="caja">
+    <h3>💸 Pagá por SINPE Móvil</h3>
+    <div class="numero">6443-1669</div>
+    <div>Jeshua Herrera Salas</div>
+    <small>Después de pagar, envía el comprobante indicando tu número elegido</small>
+  </div>
+</div>
+
+<h2 class="titulo-grid">Números disponibles</h2>
+<div class="leyenda">
+  <span><span class="punto libre"></span>Disponible</span>
+  <span><span class="punto ocupado"></span>Vendido</span>
+</div>
+<div class="contador" id="contador"></div>
+<div class="grid" id="grid"></div>
+
+<footer>Rifa juega el domingo 9 de agosto con la Lotería Nacional 🍀</footer>
+
+<script>
+  const grid = document.getElementById('grid');
+  const contador = document.getElementById('contador');
+
+  async function cargar() {
+    let vendidos = {};
+    try {
+      const resp = await fetch('numeros.json?v=' + Date.now());
+      const data = await resp.json();
+      vendidos = data.vendidos || {};
+    } catch (e) {
+      console.error('No se pudo cargar numeros.json', e);
+    }
+
+    grid.innerHTML = '';
+    let cantVendidos = 0;
+    for (let i = 0; i < 100; i++) {
+      const num = i.toString().padStart(2, '0');
+      const celda = document.createElement('div');
+      celda.className = 'numero-celda';
+      celda.textContent = num;
+      if (num in vendidos) {
+        celda.classList.add('vendido');
+        cantVendidos++;
+      }
+      grid.appendChild(celda);
+    }
+    contador.textContent = `${100 - cantVendidos} números disponibles · ${cantVendidos} vendidos`;
+  }
+
+  cargar();
+</script>
+
+</body>
+</html>

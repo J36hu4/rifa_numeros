@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Administración · Rifa</title>
+<style>
+  :root {
+    --verde: #1b7a43;
+    --verde-oscuro: #145c33;
+    --crema: #faf6ef;
+    --rojo: #c0392b;
+    --azul: #2471a3;
+    --texto: #2c3e50;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: var(--crema);
+    color: var(--texto);
+    min-height: 100vh;
+    padding-bottom: 120px;
+  }
+  header {
+    background: linear-gradient(135deg, var(--azul), #1a5276);
+    color: white;
+    text-align: center;
+    padding: 20px 16px;
+  }
+  header h1 { font-size: 1.5rem; }
+  header p { opacity: .85; font-size: .9rem; margin-top: 4px; }
+
+  .instrucciones {
+    max-width: 640px;
+    margin: 16px auto;
+    padding: 12px 16px;
+    background: #fff8e1;
+    border: 1px solid #f0d98c;
+    border-radius: 10px;
+    font-size: .9rem;
+    color: #7a6420;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 6px;
+    max-width: 640px;
+    margin: 16px auto;
+    padding: 0 12px;
+  }
+  .numero-celda {
+    position: relative;
+    aspect-ratio: 1;
+    background: white;
+    border: 2px solid var(--verde);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: clamp(.9rem, 3.5vw, 1.2rem);
+    font-weight: 700;
+    color: var(--verde-oscuro);
+    cursor: pointer;
+    user-select: none;
+    transition: transform .1s;
+  }
+  .numero-celda:hover { transform: scale(1.08); }
+  .numero-celda.vendido {
+    background: var(--rojo);
+    border-color: var(--rojo);
+    color: white;
+  }
+  .numero-celda .nombre-tag {
+    position: absolute;
+    bottom: 2px;
+    font-size: .45rem;
+    font-weight: 400;
+    max-width: 95%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .resumen {
+    text-align: center;
+    font-weight: 600;
+    color: var(--verde-oscuro);
+    margin: 8px 0;
+  }
+
+  .lista-vendidos {
+    max-width: 640px;
+    margin: 10px auto;
+    padding: 0 16px;
+  }
+  .lista-vendidos h3 { color: var(--azul); margin-bottom: 6px; }
+  .lista-vendidos table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0,0,0,.08);
+    font-size: .9rem;
+  }
+  .lista-vendidos td, .lista-vendidos th {
+    padding: 7px 10px;
+    border-bottom: 1px solid #eee;
+    text-align: left;
+  }
+  .lista-vendidos th { background: #f4f6f7; }
+
+  .barra-acciones {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: white;
+    box-shadow: 0 -3px 12px rgba(0,0,0,.15);
+    padding: 12px 16px;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  button {
+    font-size: 1rem;
+    font-weight: 600;
+    padding: 10px 18px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+  }
+  .btn-guardar { background: var(--verde); color: white; }
+  .btn-guardar:disabled { background: #aaa; cursor: not-allowed; }
+  .btn-descargar { background: var(--azul); color: white; }
+  .btn-config { background: #eee; color: var(--texto); }
+
+  .estado {
+    text-align: center;
+    font-size: .9rem;
+    min-height: 1.2em;
+    margin-top: 6px;
+    width: 100%;
+  }
+  .estado.ok { color: var(--verde); }
+  .estado.error { color: var(--rojo); }
+
+  /* Modal simple */
+  .modal-fondo {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.5);
+    z-index: 10;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+  }
+  .modal-fondo.visible { display: flex; }
+  .modal {
+    background: white;
+    border-radius: 14px;
+    padding: 22px;
+    max-width: 380px;
+    width: 100%;
+  }
+  .modal h3 { margin-bottom: 10px; }
+  .modal input {
+    width: 100%;
+    padding: 10px;
+    font-size: 1rem;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    margin: 8px 0 14px;
+  }
+  .modal .botones { display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap; }
+  .btn-liberar { background: var(--rojo); color: white; }
+  .btn-cancelar { background: #eee; }
+  .modal small { color: #888; display: block; margin-top: 8px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🔧 Administración de la Rifa</h1>
+  <p>Tocá un número para marcarlo como vendido o liberarlo</p>
+</header>
+
+<div class="instrucciones">
+  <b>¿Cómo funciona?</b> Tocá un número, escribí el nombre del comprador (opcional) y guardá.
+  Los cambios <b>no se publican</b> hasta que presiones <b>💾 Guardar en la página</b>
+  (necesita el token de GitHub, se configura una sola vez) o descargués el archivo y lo subás al repositorio.
+</div>
+
+<div class="resumen" id="resumen"></div>
+<div class="grid" id="grid"></div>
+
+<div class="lista-vendidos" id="listaVendidos"></div>
+
+<div class="barra-acciones">
+  <button class="btn-guardar" id="btnGuardar">💾 Guardar en la página</button>
+  <button class="btn-descargar" id="btnDescargar">⬇️ Descargar numeros.json</button>
+  <button class="btn-config" id="btnConfig">⚙️ Configurar GitHub</button>
+  <div class="estado" id="estado"></div>
+</div>
+
+<!-- Modal número -->
+<div class="modal-fondo" id="modalNumero">
+  <div class="modal">
+    <h3 id="modalTitulo">Número 00</h3>
+    <label>Nombre del comprador (opcional):</label>
+    <input type="text" id="inputNombre" placeholder="Ej: María Rodríguez">
+    <div class="botones">
+      <button class="btn-cancelar" id="btnCancelar">Cancelar</button>
+      <button class="btn-liberar" id="btnLiberar" style="display:none">Liberar número</button>
+      <button class="btn-guardar" id="btnMarcar">Marcar vendido</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal configuración GitHub -->
+<div class="modal-fondo" id="modalConfig">
+  <div class="modal">
+    <h3>⚙️ Configuración de GitHub</h3>
+    <label>Usuario de GitHub:</label>
+    <input type="text" id="cfgUsuario" placeholder="tu-usuario">
+    <label>Nombre del repositorio:</label>
+    <input type="text" id="cfgRepo" placeholder="rifa-numeros">
+    <label>Token de acceso (fine-grained, permiso Contents):</label>
+    <input type="password" id="cfgToken" placeholder="github_pat_...">
+    <small>El token se guarda solo en este navegador (localStorage).
+    Crealo en GitHub → Settings → Developer settings → Fine-grained tokens,
+    con acceso solo a este repositorio y permiso de <b>Contents: Read and write</b>.</small>
+    <div class="botones" style="margin-top:14px">
+      <button class="btn-cancelar" id="cfgCancelar">Cancelar</button>
+      <button class="btn-guardar" id="cfgGuardar">Guardar configuración</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  let vendidos = {};      // { "07": "Nombre" }
+  let numeroActual = null;
+
+  const grid = document.getElementById('grid');
+  const resumen = document.getElementById('resumen');
+  const listaVendidos = document.getElementById('listaVendidos');
+  const estado = document.getElementById('estado');
+
+  // ---------- Carga y render ----------
+  async function cargar() {
+    try {
+      const resp = await fetch('numeros.json?v=' + Date.now());
+      const data = await resp.json();
+      vendidos = data.vendidos || {};
+    } catch (e) {
+      vendidos = {};
+      mostrarEstado('No se pudo cargar numeros.json (¿primera vez?). Empezando vacío.', 'error');
+    }
+    render();
+  }
+
+  function render() {
+    grid.innerHTML = '';
+    for (let i = 0; i < 100; i++) {
+      const num = i.toString().padStart(2, '0');
+      const celda = document.createElement('div');
+      celda.className = 'numero-celda';
+      celda.textContent = num;
+      if (num in vendidos) {
+        celda.classList.add('vendido');
+        if (vendidos[num]) {
+          const tag = document.createElement('span');
+          tag.className = 'nombre-tag';
+          tag.textContent = vendidos[num];
+          celda.appendChild(tag);
+        }
+      }
+      celda.onclick = () => abrirModalNumero(num);
+      grid.appendChild(celda);
+    }
+
+    const cant = Object.keys(vendidos).length;
+    resumen.textContent = `${cant} vendidos · ${100 - cant} disponibles · Recaudado: ₡${(cant * 2000).toLocaleString('es-CR')}`;
+
+    const nums = Object.keys(vendidos).sort();
+    if (nums.length === 0) {
+      listaVendidos.innerHTML = '';
+    } else {
+      let filas = nums.map(n => `<tr><td><b>${n}</b></td><td>${vendidos[n] || '—'}</td></tr>`).join('');
+      listaVendidos.innerHTML = `<h3>Números vendidos</h3>
+        <table><tr><th>Número</th><th>Comprador</th></tr>${filas}</table>`;
+    }
+  }
+
+  // ---------- Modal de número ----------
+  const modalNumero = document.getElementById('modalNumero');
+  const inputNombre = document.getElementById('inputNombre');
+  const btnLiberar = document.getElementById('btnLiberar');
+  const btnMarcar = document.getElementById('btnMarcar');
+
+  function abrirModalNumero(num) {
+    numeroActual = num;
+    document.getElementById('modalTitulo').textContent = 'Número ' + num;
+    const yaVendido = num in vendidos;
+    inputNombre.value = yaVendido ? (vendidos[num] || '') : '';
+    btnLiberar.style.display = yaVendido ? 'inline-block' : 'none';
+    btnMarcar.textContent = yaVendido ? 'Actualizar nombre' : 'Marcar vendido';
+    modalNumero.classList.add('visible');
+    inputNombre.focus();
+  }
+
+  btnMarcar.onclick = () => {
+    vendidos[numeroActual] = inputNombre.value.trim();
+    cerrarModales();
+    render();
+    mostrarEstado('Cambio pendiente: recordá guardar.', 'ok');
+  };
+
+  btnLiberar.onclick = () => {
+    delete vendidos[numeroActual];
+    cerrarModales();
+    render();
+    mostrarEstado('Cambio pendiente: recordá guardar.', 'ok');
+  };
+
+  document.getElementById('btnCancelar').onclick = cerrarModales;
+
+  function cerrarModales() {
+    document.querySelectorAll('.modal-fondo').forEach(m => m.classList.remove('visible'));
+  }
+
+  // ---------- Descargar JSON ----------
+  document.getElementById('btnDescargar').onclick = () => {
+    const blob = new Blob([jsonActual()], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'numeros.json';
+    a.click();
+    URL.revokeObjectURL(a.href);
+    mostrarEstado('Archivo descargado. Subilo al repositorio para publicar los cambios.', 'ok');
+  };
+
+  function jsonActual() {
+    const ordenado = {};
+    Object.keys(vendidos).sort().forEach(k => ordenado[k] = vendidos[k]);
+    return JSON.stringify({ vendidos: ordenado }, null, 2) + '\n';
+  }
+
+  // ---------- Configuración GitHub ----------
+  const modalConfig = document.getElementById('modalConfig');
+
+  function leerConfig() {
+    return {
+      usuario: localStorage.getItem('rifa_gh_usuario') || '',
+      repo: localStorage.getItem('rifa_gh_repo') || '',
+      token: localStorage.getItem('rifa_gh_token') || ''
+    };
+  }
+
+  document.getElementById('btnConfig').onclick = () => {
+    const cfg = leerConfig();
+    // Autodetectar usuario/repo si estamos en *.github.io/repo
+    if (!cfg.usuario && location.hostname.endsWith('.github.io')) {
+      cfg.usuario = location.hostname.split('.')[0];
+      const partes = location.pathname.split('/').filter(Boolean);
+      if (partes.length > 0 && !partes[0].endsWith('.html')) cfg.repo = partes[0];
+    }
+    document.getElementById('cfgUsuario').value = cfg.usuario;
+    document.getElementById('cfgRepo').value = cfg.repo;
+    document.getElementById('cfgToken').value = cfg.token;
+    modalConfig.classList.add('visible');
+  };
+
+  document.getElementById('cfgCancelar').onclick = cerrarModales;
+
+  document.getElementById('cfgGuardar').onclick = () => {
+    localStorage.setItem('rifa_gh_usuario', document.getElementById('cfgUsuario').value.trim());
+    localStorage.setItem('rifa_gh_repo', document.getElementById('cfgRepo').value.trim());
+    localStorage.setItem('rifa_gh_token', document.getElementById('cfgToken').value.trim());
+    cerrarModales();
+    mostrarEstado('Configuración guardada en este navegador.', 'ok');
+  };
+
+  // ---------- Guardar vía API de GitHub ----------
+  document.getElementById('btnGuardar').onclick = async () => {
+    const cfg = leerConfig();
+    if (!cfg.usuario || !cfg.repo || !cfg.token) {
+      mostrarEstado('Primero configurá GitHub con el botón ⚙️ (o usá ⬇️ Descargar).', 'error');
+      return;
+    }
+
+    const btn = document.getElementById('btnGuardar');
+    btn.disabled = true;
+    mostrarEstado('Guardando...', 'ok');
+
+    try {
+      const api = `https://api.github.com/repos/${cfg.usuario}/${cfg.repo}/contents/numeros.json`;
+      const headers = {
+        'Authorization': 'Bearer ' + cfg.token,
+        'Accept': 'application/vnd.github+json'
+      };
+
+      // Obtener el SHA actual del archivo (necesario para actualizarlo)
+      let sha = null;
+      const getResp = await fetch(api, { headers });
+      if (getResp.ok) sha = (await getResp.json()).sha;
+
+      const body = {
+        message: 'Actualizar números vendidos',
+        content: btoa(unescape(encodeURIComponent(jsonActual())))
+      };
+      if (sha) body.sha = sha;
+
+      const putResp = await fetch(api, {
+        method: 'PUT',
+        headers,
+        body: JSON.stringify(body)
+      });
+
+      if (!putResp.ok) {
+        const err = await putResp.json().catch(() => ({}));
+        throw new Error(err.message || ('Error HTTP ' + putResp.status));
+      }
+
+      mostrarEstado('✅ Guardado. La página pública se actualiza en 1-2 minutos.', 'ok');
+    } catch (e) {
+      mostrarEstado('❌ Error al guardar: ' + e.message, 'error');
+    } finally {
+      btn.disabled = false;
+    }
+  };
+
+  function mostrarEstado(msg, tipo) {
+    estado.textContent = msg;
+    estado.className = 'estado ' + (tipo || '');
+  }
+
+  cargar();
+</script>
+
+</body>
+</html>
