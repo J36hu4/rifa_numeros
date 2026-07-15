@@ -3,227 +3,356 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Rifa de Números 🎉</title>
+<title>Gran Rifa · ₡100.000</title>
+<meta name="description" content="Rifa de números del 00 al 99. Premio de ₡100.000. Juega el domingo 9 de agosto con la Lotería Nacional.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"></noscript>
 <style>
   :root {
-    --verde: #1b7a43;
-    --verde-oscuro: #145c33;
-    --crema: #faf6ef;
-    --rojo: #c0392b;
-    --dorado: #e6a817;
-    --texto: #2c3e50;
+    --verde: #0f9d63;
+    --verde-oscuro: #0a6b45;
+    --verde-tint: #e7f6ef;
+    --oro: #f2a71b;
+    --oro-claro: #ffd35c;
+    --rosa: #e11d48;
+    --tinta: #14231d;
+    --gris: #5f7169;
+    --crema: #fbf7f0;
+    --superficie: #ffffff;
+    --borde: #e7e0d4;
+    --radio: 20px;
+    --sombra-sm: 0 2px 8px rgba(20,35,29,.06), 0 1px 2px rgba(20,35,29,.04);
+    --sombra-md: 0 10px 30px rgba(20,35,29,.10), 0 2px 8px rgba(20,35,29,.05);
+    --sombra-lg: 0 24px 60px rgba(10,107,69,.20), 0 6px 16px rgba(20,35,29,.08);
   }
+
   * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
   body {
-    font-family: 'Segoe UI', Arial, sans-serif;
-    background: var(--crema);
-    color: var(--texto);
-    min-height: 100vh;
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    color: var(--tinta);
+    background:
+      radial-gradient(1200px 500px at 100% -10%, rgba(242,167,27,.14), transparent 60%),
+      radial-gradient(900px 500px at -10% 10%, rgba(15,157,99,.12), transparent 55%),
+      var(--crema);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
   }
-  header {
-    background: linear-gradient(135deg, var(--verde), var(--verde-oscuro));
-    color: white;
-    text-align: center;
-    padding: 28px 16px 22px;
-  }
-  header h1 { font-size: 2rem; letter-spacing: 1px; }
-  header p { opacity: .9; margin-top: 4px; }
+  .contenedor { width: 100%; max-width: 960px; margin: 0 auto; padding: 0 20px; }
 
+  /* ---------- HERO ---------- */
+  .hero {
+    position: relative;
+    text-align: center;
+    padding: 64px 20px 150px;
+    background: linear-gradient(160deg, #12a869 0%, var(--verde-oscuro) 100%);
+    color: #fff;
+    border-radius: 0 0 40px 40px;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: "";
+    position: absolute; inset: 0;
+    background-image:
+      radial-gradient(circle at 15% 25%, rgba(255,255,255,.10) 0 8px, transparent 9px),
+      radial-gradient(circle at 82% 18%, rgba(255,211,92,.35) 0 10px, transparent 11px),
+      radial-gradient(circle at 90% 60%, rgba(255,255,255,.08) 0 6px, transparent 7px),
+      radial-gradient(circle at 8% 70%, rgba(255,211,92,.25) 0 7px, transparent 8px),
+      radial-gradient(circle at 50% 8%, rgba(255,255,255,.06) 0 5px, transparent 6px);
+    pointer-events: none;
+  }
+  .hero > * { position: relative; z-index: 1; }
+  .cinta {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(255,255,255,.16);
+    border: 1px solid rgba(255,255,255,.28);
+    padding: 7px 16px; border-radius: 999px;
+    font-size: .82rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+  }
+  .cinta svg { width: 16px; height: 16px; }
+  .hero h1 {
+    font-family: 'Fraunces', Georgia, serif;
+    font-weight: 700;
+    font-size: clamp(2.6rem, 8vw, 4.2rem);
+    line-height: 1.02;
+    margin: 18px 0 8px;
+    letter-spacing: -.01em;
+  }
+  .hero p.lema { font-size: clamp(1rem, 3.5vw, 1.2rem); opacity: .92; max-width: 30ch; margin: 0 auto; }
+
+  /* ---------- TARJETA PREMIO (flotante) ---------- */
+  .premio {
+    margin-top: -110px;
+    position: relative; z-index: 2;
+  }
+  .premio-card {
+    background: var(--superficie);
+    border-radius: 28px;
+    box-shadow: var(--sombra-lg);
+    padding: 34px 28px;
+    text-align: center;
+    border: 1px solid rgba(255,255,255,.6);
+    background-image: linear-gradient(180deg, #fffdf8, #ffffff);
+  }
+  .premio-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    color: var(--verde-oscuro); background: var(--verde-tint);
+    padding: 6px 14px; border-radius: 999px;
+    font-weight: 700; font-size: .8rem; letter-spacing: .08em; text-transform: uppercase;
+  }
+  .premio-badge svg { width: 16px; height: 16px; }
+  .premio-monto {
+    font-family: 'Fraunces', Georgia, serif;
+    font-weight: 700;
+    font-size: clamp(3.2rem, 13vw, 5.2rem);
+    line-height: 1;
+    margin: 14px 0 2px;
+    background: linear-gradient(135deg, var(--oro), #e0870a);
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .premio-sub { color: var(--gris); font-weight: 600; letter-spacing: .04em; text-transform: uppercase; font-size: .82rem; }
+  .premio-img {
+    display: block; width: 100%; max-height: 260px; object-fit: cover;
+    border-radius: 16px; margin-top: 20px; box-shadow: var(--sombra-md);
+  }
+
+  /* ---------- INFO CARDS ---------- */
   .info {
-    max-width: 900px;
-    margin: 24px auto;
-    padding: 0 16px;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
     gap: 16px;
+    margin-top: 20px;
   }
-  .tarjeta {
-    background: white;
-    border-radius: 14px;
-    padding: 18px;
-    text-align: center;
-    box-shadow: 0 3px 10px rgba(0,0,0,.08);
-    border-top: 4px solid var(--verde);
-  }
-  .tarjeta .icono { font-size: 2rem; }
-  .tarjeta h3 { margin: 6px 0 4px; font-size: .85rem; text-transform: uppercase; letter-spacing: 1px; color: #888; }
-  .tarjeta p { font-size: 1.15rem; font-weight: 700; }
-  .tarjeta small { color: #777; font-weight: 400; }
-
-  .premio-banner {
-    max-width: 900px;
-    margin: 0 auto 8px;
-    padding: 0 16px;
-  }
-  .premio-banner .caja {
-    background: linear-gradient(135deg, var(--dorado), #f5c542);
-    border-radius: 14px;
-    text-align: center;
+  .card {
+    background: var(--superficie);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio);
     padding: 22px;
-    color: #5b3d00;
-    box-shadow: 0 3px 10px rgba(0,0,0,.12);
+    box-shadow: var(--sombra-sm);
+    display: flex; align-items: center; gap: 16px;
+    transition: transform .2s ease, box-shadow .2s ease;
   }
-  .premio-banner .caja .monto { font-size: 2.4rem; font-weight: 800; }
-  .premio-banner img {
-    display: block;
-    width: 100%;
-    max-height: 320px;
-    object-fit: cover;
-    border-radius: 14px;
-    margin-top: 12px;
-    box-shadow: 0 3px 10px rgba(0,0,0,.12);
+  .card:hover { transform: translateY(-3px); box-shadow: var(--sombra-md); }
+  .card .ico {
+    flex: 0 0 auto;
+    width: 52px; height: 52px; border-radius: 14px;
+    display: grid; place-items: center;
+    background: var(--verde-tint); color: var(--verde-oscuro);
   }
+  .card .ico svg { width: 26px; height: 26px; }
+  .card.oro .ico { background: #fdf1d6; color: #b9770a; }
+  .card .etq { font-size: .72rem; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; color: var(--gris); }
+  .card .val { font-size: 1.32rem; font-weight: 800; line-height: 1.2; }
+  .card .nota { font-size: .85rem; color: var(--gris); }
 
+  /* ---------- SINPE ---------- */
   .sinpe {
-    max-width: 900px;
-    margin: 0 auto 24px;
-    padding: 0 16px;
-    text-align: center;
+    margin-top: 16px;
+    background: linear-gradient(135deg, #14231d, #0a2b1f);
+    color: #fff;
+    border-radius: var(--radio);
+    padding: 26px;
+    display: flex; align-items: center; justify-content: space-between; gap: 20px;
+    flex-wrap: wrap;
+    box-shadow: var(--sombra-md);
   }
-  .sinpe .caja {
-    background: white;
-    border-radius: 14px;
-    padding: 16px;
-    box-shadow: 0 3px 10px rgba(0,0,0,.08);
-    border-top: 4px solid var(--rojo);
+  .sinpe .izq { display: flex; align-items: center; gap: 16px; }
+  .sinpe .ico {
+    width: 52px; height: 52px; border-radius: 14px; flex: 0 0 auto;
+    display: grid; place-items: center;
+    background: rgba(255,255,255,.12); color: var(--oro-claro);
   }
-  .sinpe .numero { font-size: 1.6rem; font-weight: 800; color: var(--rojo); letter-spacing: 2px; }
+  .sinpe .ico svg { width: 26px; height: 26px; }
+  .sinpe .etq { font-size: .72rem; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; color: rgba(255,255,255,.6); }
+  .sinpe .num { font-size: 1.7rem; font-weight: 800; letter-spacing: .04em; }
+  .sinpe .titular { font-size: .9rem; color: rgba(255,255,255,.75); }
+  .btn-copiar {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--oro); color: #3a2600;
+    border: none; border-radius: 12px; padding: 12px 18px;
+    font-family: inherit; font-size: .95rem; font-weight: 800; cursor: pointer;
+    transition: background .2s ease, transform .1s ease;
+  }
+  .btn-copiar svg { width: 18px; height: 18px; }
+  .btn-copiar:hover { background: var(--oro-claro); }
+  .btn-copiar:active { transform: scale(.97); }
+  .btn-copiar:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
 
-  h2.titulo-grid {
-    text-align: center;
-    margin: 10px 0 4px;
-    color: var(--verde-oscuro);
+  /* ---------- SECCIÓN NÚMEROS ---------- */
+  .numeros { margin-top: 48px; }
+  .titulo-sec { text-align: center; }
+  .titulo-sec h2 {
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: clamp(1.8rem, 5vw, 2.4rem); color: var(--verde-oscuro); font-weight: 700;
   }
-  .leyenda {
-    text-align: center;
-    margin-bottom: 14px;
-    font-size: .9rem;
-    color: #666;
+  .titulo-sec p { color: var(--gris); margin-top: 4px; }
+
+  .progreso-wrap { max-width: 520px; margin: 22px auto 8px; }
+  .progreso {
+    height: 12px; border-radius: 999px; background: var(--verde-tint);
+    overflow: hidden; box-shadow: inset 0 1px 3px rgba(0,0,0,.06);
   }
-  .leyenda span { display: inline-block; margin: 0 10px; }
-  .punto {
-    display: inline-block;
-    width: 12px; height: 12px;
-    border-radius: 50%;
-    margin-right: 5px;
-    vertical-align: middle;
+  .progreso .barra {
+    height: 100%; width: 0;
+    background: linear-gradient(90deg, var(--verde), #17c47e);
+    border-radius: 999px; transition: width .6s cubic-bezier(.4,0,.2,1);
   }
-  .punto.libre { background: white; border: 2px solid var(--verde); }
-  .punto.ocupado { background: var(--rojo); border: 2px solid var(--rojo); }
+  .contador { text-align: center; font-weight: 700; color: var(--verde-oscuro); margin-top: 10px; }
+  .contador span.libre { color: var(--verde); }
+  .contador span.vend { color: var(--rosa); }
+
+  .leyenda { display: flex; justify-content: center; gap: 22px; margin: 14px 0 20px; font-size: .9rem; color: var(--gris); }
+  .leyenda i { display: inline-block; width: 14px; height: 14px; border-radius: 5px; margin-right: 7px; vertical-align: -2px; }
+  .leyenda i.libre { background: #fff; border: 2px solid var(--verde); }
+  .leyenda i.ocupado { background: var(--rosa); }
 
   .grid {
     display: grid;
     grid-template-columns: repeat(10, 1fr);
-    gap: 6px;
-    max-width: 640px;
-    margin: 0 auto 40px;
-    padding: 0 12px;
+    gap: 8px;
+    max-width: 640px; margin: 0 auto;
   }
-  .numero-celda {
-    position: relative;
-    aspect-ratio: 1;
-    background: white;
-    border: 2px solid var(--verde);
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: clamp(.9rem, 3.5vw, 1.3rem);
-    font-weight: 700;
-    color: var(--verde-oscuro);
+  .celda {
+    position: relative; aspect-ratio: 1;
+    background: var(--superficie);
+    border: 1.5px solid var(--borde);
+    border-radius: 13px;
+    display: grid; place-items: center;
+    font-size: clamp(.85rem, 3.4vw, 1.25rem); font-weight: 800; color: var(--verde-oscuro);
+    box-shadow: var(--sombra-sm);
+    transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
   }
-  .numero-celda.vendido {
-    background: #f9e9e7;
-    border-color: #e0b4ae;
-    color: #c9a19b;
+  .celda:not(.vendido):hover { transform: translateY(-2px); border-color: var(--verde); box-shadow: var(--sombra-md); }
+  .celda.vendido {
+    background: repeating-linear-gradient(45deg, #fbe9ec, #fbe9ec 6px, #f7dfe3 6px, #f7dfe3 12px);
+    border-color: #f2c2ca; color: #d6919c; box-shadow: none;
   }
-  .numero-celda.vendido::after {
+  .celda.vendido::after {
     content: "VENDIDO";
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: clamp(.35rem, 1.6vw, .55rem);
-    font-weight: 800;
-    color: var(--rojo);
-    border: 2px solid var(--rojo);
-    border-radius: 6px;
-    margin: 15%;
-    transform: rotate(-18deg);
-    background: rgba(255,255,255,.55);
-    letter-spacing: 1px;
+    position: absolute; inset: 14%;
+    display: grid; place-items: center;
+    font-size: clamp(.32rem, 1.5vw, .5rem); font-weight: 900; letter-spacing: .05em;
+    color: #fff; background: var(--rosa);
+    border-radius: 7px; transform: rotate(-14deg);
+    box-shadow: 0 3px 8px rgba(225,29,72,.35);
   }
 
-  .contador {
-    text-align: center;
-    margin-bottom: 20px;
-    font-size: 1.05rem;
-    color: var(--verde-oscuro);
-    font-weight: 600;
-  }
-
+  /* ---------- FOOTER ---------- */
   footer {
-    text-align: center;
-    padding: 18px;
-    color: #999;
-    font-size: .85rem;
+    margin-top: 56px; padding: 28px 20px 40px;
+    text-align: center; color: var(--gris); font-size: .9rem;
+    border-top: 1px solid var(--borde);
+  }
+  footer .clover { color: var(--verde); }
+
+  @media (max-width: 520px) {
+    .sinpe { flex-direction: column; align-items: stretch; text-align: center; }
+    .sinpe .izq { flex-direction: column; text-align: center; }
+    .btn-copiar { justify-content: center; }
+    .grid { gap: 6px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; scroll-behavior: auto; }
   }
 </style>
 </head>
 <body>
 
-<header>
-  <h1>🎉 Gran Rifa 🎉</h1>
-  <p>¡Escogé tu número de la suerte!</p>
+<header class="hero">
+  <span class="cinta">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v2"/><path d="M4 8a2 2 0 0 1 0 4v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4a2 2 0 0 1 0-4"/><path d="M14 4v16" stroke-dasharray="2 2"/></svg>
+    Rifa de números · 00 al 99
+  </span>
+  <h1>Gran Rifa</h1>
+  <p class="lema">Escogé tu número de la suerte y ganá el premio mayor.</p>
 </header>
 
-<div class="premio-banner">
-  <div class="caja">
-    <div>🏆 PREMIO</div>
-    <div class="monto">₡100.000</div>
-    <div>Cien mil colones</div>
-  </div>
-  <img src="premio.jpg" alt="Premio: 100 mil colones" onerror="this.remove()">
-</div>
+<main class="contenedor">
 
-<div class="info">
-  <div class="tarjeta">
-    <div class="icono">📅</div>
-    <h3>Fecha del sorteo</h3>
-    <p>Domingo 9 de agosto</p>
-    <small>Juega con la Lotería Nacional</small>
-  </div>
-  <div class="tarjeta">
-    <div class="icono">🎟️</div>
-    <h3>Costo del número</h3>
-    <p>₡2.000</p>
-    <small>Cada número, del 00 al 99</small>
-  </div>
-</div>
+  <section class="premio">
+    <div class="premio-card">
+      <span class="premio-badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
+        Premio mayor
+      </span>
+      <div class="premio-monto">₡100.000</div>
+      <div class="premio-sub">Cien mil colones</div>
+      <img class="premio-img" src="premio.jpg" alt="Foto del premio de la rifa" onerror="this.remove()">
+    </div>
+  </section>
 
-<div class="sinpe">
-  <div class="caja">
-    <h3>💸 Pagá por SINPE Móvil</h3>
-    <div class="numero">6443-1669</div>
-    <div>Jeshua Herrera Salas</div>
-    <small>Después de pagar, envía el comprobante indicando tu número elegido</small>
-  </div>
-</div>
+  <section class="info">
+    <div class="card oro">
+      <div class="ico">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+      </div>
+      <div>
+        <div class="etq">Fecha del sorteo</div>
+        <div class="val">Domingo 9 de agosto</div>
+        <div class="nota">Juega con la Lotería Nacional</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ico">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2M13 17v2M13 11v2"/></svg>
+      </div>
+      <div>
+        <div class="etq">Costo del número</div>
+        <div class="val">₡2.000</div>
+        <div class="nota">Cada número, del 00 al 99</div>
+      </div>
+    </div>
+  </section>
 
-<h2 class="titulo-grid">Números disponibles</h2>
-<div class="leyenda">
-  <span><span class="punto libre"></span>Disponible</span>
-  <span><span class="punto ocupado"></span>Vendido</span>
-</div>
-<div class="contador" id="contador"></div>
-<div class="grid" id="grid"></div>
+  <section class="sinpe">
+    <div class="izq">
+      <div class="ico">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2.5"/><path d="M11 18h2"/></svg>
+      </div>
+      <div>
+        <div class="etq">Pagá por SINPE Móvil</div>
+        <div class="num" id="numSinpe">6443-1669</div>
+        <div class="titular">Jeshua Herrera Salas · enviá el comprobante con tu número</div>
+      </div>
+    </div>
+    <button class="btn-copiar" id="btnCopiar" aria-label="Copiar número de SINPE">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+      <span id="txtCopiar">Copiar número</span>
+    </button>
+  </section>
 
-<footer>Rifa juega el domingo 9 de agosto con la Lotería Nacional 🍀</footer>
+  <section class="numeros">
+    <div class="titulo-sec">
+      <h2>Elegí tu número</h2>
+      <p>Estos son los 100 números de la rifa. Los que tienen sello ya están vendidos.</p>
+    </div>
+
+    <div class="progreso-wrap">
+      <div class="progreso"><div class="barra" id="barra"></div></div>
+      <div class="contador" id="contador"></div>
+    </div>
+
+    <div class="leyenda">
+      <span><i class="libre"></i>Disponible</span>
+      <span><i class="ocupado"></i>Vendido</span>
+    </div>
+
+    <div class="grid" id="grid"></div>
+  </section>
+</main>
+
+<footer>
+  Rifa juega el <b>domingo 9 de agosto</b> con la Lotería Nacional <span class="clover">🍀</span><br>
+  ¡Mucha suerte a todos!
+</footer>
 
 <script>
   const grid = document.getElementById('grid');
   const contador = document.getElementById('contador');
+  const barra = document.getElementById('barra');
 
   async function cargar() {
     let vendidos = {};
@@ -236,20 +365,34 @@
     }
 
     grid.innerHTML = '';
-    let cantVendidos = 0;
+    let cant = 0;
     for (let i = 0; i < 100; i++) {
       const num = i.toString().padStart(2, '0');
       const celda = document.createElement('div');
-      celda.className = 'numero-celda';
+      celda.className = 'celda';
       celda.textContent = num;
-      if (num in vendidos) {
-        celda.classList.add('vendido');
-        cantVendidos++;
-      }
+      if (num in vendidos) { celda.classList.add('vendido'); cant++; }
       grid.appendChild(celda);
     }
-    contador.textContent = `${100 - cantVendidos} números disponibles · ${cantVendidos} vendidos`;
+
+    const libres = 100 - cant;
+    contador.innerHTML = `<span class="libre">${libres} disponibles</span> · <span class="vend">${cant} vendidos</span>`;
+    requestAnimationFrame(() => { barra.style.width = cant + '%'; });
   }
+
+  // Copiar número de SINPE
+  const btnCopiar = document.getElementById('btnCopiar');
+  const txtCopiar = document.getElementById('txtCopiar');
+  btnCopiar.addEventListener('click', async () => {
+    const numero = document.getElementById('numSinpe').textContent.replace(/\D/g, '');
+    try {
+      await navigator.clipboard.writeText(numero);
+      txtCopiar.textContent = '¡Copiado!';
+      setTimeout(() => txtCopiar.textContent = 'Copiar número', 1800);
+    } catch (e) {
+      txtCopiar.textContent = numero;
+    }
+  });
 
   cargar();
 </script>
